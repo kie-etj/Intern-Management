@@ -63,12 +63,12 @@ class SchoolController extends AdminBaseController
                     ->exists();
 
         if ($exists) {
-            $warnings = '<script>alert("Đã có trường này trong CSDL");</script>';
+            $warnings = '<script>alert("Đã có trường này trong CSDL!");</script>';
             return view('interns::admin.schools.create', compact('warnings'));
         } else {
 
             $this->school->create($request->all());
-    
+            
             return redirect()->route('admin.interns.school.index')
                 ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::schools.title.schools')]));
 
