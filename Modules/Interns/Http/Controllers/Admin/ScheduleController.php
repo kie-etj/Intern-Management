@@ -31,9 +31,19 @@ class ScheduleController extends AdminBaseController
      *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // dd($request->ajax());
         // $schedules = $this->schedule->all();
+        if($request->ajax()) {  
+            $data = DB::table('interns__fullcalendars')
+                ->select('id', 'student', 'title', 'start', 'end')
+                ->where('start', '>=', $request->start)
+                ->where('end', '<=', $request->end)
+                ->get();
+            return response()->json($data);
+        }
+
         $schedules = DB::table('interns__schedules')
                         ->select('interns__schedules.id', 'fullname', 'position', 'schedule', 'interns__schedules.created_at')
                         ->join('interns__students', 'interns__students.id', 'interns__schedules.student')
@@ -147,6 +157,7 @@ class ScheduleController extends AdminBaseController
      */
     public function update(Schedule $schedule, UpdateScheduleRequest $request)
     {
+        dd($request->ajax());
         if (isset($request->schedules)) {
             $schedules = $request->schedules;
             asort($schedules);
@@ -179,5 +190,48 @@ class ScheduleController extends AdminBaseController
 
         return redirect()->route('admin.interns.schedule.index')
             ->withSuccess(trans('core::core.messages.resource deleted', ['name' => trans('interns::schedules.title.schedules')]));
+    }
+
+    // FullCalendar
+    public function calendarEvents(Request $request)
+    {
+        dd($request->all());
+        switch ($request->type) {
+           case 'create':
+              $event = CrudEvents::create([
+                  'event_name' => $request->event_name,
+                  'event_start' => $request->event_start,
+                  'event_end' => $request->event_end,
+              ]);
+              $event = DB::table('interns__fullcalendars')
+                        ->insert([
+                            'event_name' => $request->event_name,
+                            'event_start' => $request->event_start,
+                            'event_end' => $request->event_end,
+                        ]);
+ 
+              return response()->json($event);
+             break;
+  
+           case 'edit':
+              $event = CrudEvents::find($request->id)->update([
+                  'event_name' => $request->event_name,
+                  'event_start' => $request->event_start,
+                  'event_end' => $request->event_end,
+              ]);
+ 
+              return response()->json($event);
+             break;
+  
+           case 'delete':
+              $event = CrudEvents::find($request->id)->delete();
+  
+              return response()->json($event);
+             break;
+             
+           default:
+             # ...
+             break;
+        }
     }
 }

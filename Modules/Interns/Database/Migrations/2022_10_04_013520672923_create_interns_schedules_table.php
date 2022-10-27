@@ -19,6 +19,16 @@ class CreateInternsSchedulesTable extends Migration
             $table->string('schedule');
             $table->timestamps();
         });
+
+        Schema::create('interns__fullcalendars', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->increments('id');
+            $table->string('student');
+            $table->string('title');
+            $table->dateTime('start');
+            $table->datetime('end');
+            $table->timestamps();
+        });
     }
 
     /**

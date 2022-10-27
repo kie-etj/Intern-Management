@@ -19,12 +19,12 @@ class CreateInternsStudentsTable extends Migration
             $table->date('dateofbirth');
             $table->string('email');
             $table->string('phone');
+            $table->string('studentid');
             $table->string('position');
             $table->string('school');
             $table->string('faculty');
             $table->integer('year');
             $table->string('avatar');
-            $table->string('hanetpersonid');
             $table->string('lecturername');
             $table->string('lectureremail');
             $table->string('lecturerphone');

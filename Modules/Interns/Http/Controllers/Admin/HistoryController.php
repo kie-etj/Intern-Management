@@ -29,14 +29,14 @@ class HistoryController extends AdminBaseController
     public function hanet(Request $request)
     {
         $post = [
-            'token' =>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNzQwNjQzMTE2Mzg5MzIyMjQiLCJlbWFpbCI6ImxlZHVjdG9hbkBsZWR1Y3RvYW4uY29tIiwiY2xpZW50X2lkIjoiYzNiYjU3MDVmM2Y3ZjcyMDI3ZWYwZmJmMmRkYmQ1MjQiLCJ0eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwiaWF0IjoxNjYzNzU2MDExLCJleHAiOjE2NjYzNDgwMTF9.abnKUVTMFnkASlvP_IpiKQLocQyhl5Q96TdoxPg18lo',
+            'token' =>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNzQwNjQzMTE2Mzg5MzIyMjQiLCJlbWFpbCI6ImxlZHVjdG9hbkBsZWR1Y3RvYW4uY29tIiwiY2xpZW50X2lkIjoiYzNiYjU3MDVmM2Y3ZjcyMDI3ZWYwZmJmMmRkYmQ1MjQiLCJ0eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwiaWF0IjoxNjY2ODYyODE0LCJleHAiOjE2OTgzOTg4MTR9.FRV12hDyk-zJ-Y0UNxTtwzeOB9-o3cAPvwnXrrEI5As',
             'placeID' => '8037',
             'devices' => 'C21024B609',
             // 'personID' => '2281795527890698240',
-            // 'aliasID' => '1',
-            'date' => '2022-10-24',
-            // 'exType' => '4,2',
-            // 'type' => '0',
+            // 'aliasID' => '197CT31392',
+            'date' => '2022-10-27',
+            'exType' => '4,2',
+            'type' => '0',
         ];
 
         $curl = curl_init();

@@ -207,6 +207,8 @@ $router->group(['prefix' =>'/interns'], function (Router $router) {
         'uses' => 'HistoryController@hanet',
         'middleware' => 'can:interns.histories.hanet'
     ]);
+    $router->get('fullcalendar','ScheduleController@index');
+    $router->post('fullcalendar-ajax','ScheduleController@calendarEvents');
 // append
 
 

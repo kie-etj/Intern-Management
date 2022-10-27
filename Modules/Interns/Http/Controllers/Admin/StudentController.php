@@ -39,7 +39,7 @@ class StudentController extends AdminBaseController
         $students = DB::table('interns__students')
                     ->select('interns__schedules.id AS schedule', 'interns__students.id', 
                             'interns__students.fullname', DB::raw('date_format(dateofbirth, "%d-%m-%Y") AS dateofbirth'), 
-                            'email', 'phone', 'position', 'interns__schools.shortname AS school', 
+                            'email', 'phone', 'studentid', 'position', 'interns__schools.shortname AS school', 
                             'interns__faculties.facultyname AS faculty', 'year', 'lecturername', 'lectureremail', 'lecturerphone')
                     ->join('interns__schools', 'interns__schools.id', 'interns__students.school')
                     ->join('interns__faculties', 'interns__faculties.id', 'interns__students.faculty')
@@ -81,9 +81,9 @@ class StudentController extends AdminBaseController
      */
     public function store(CreateStudentRequest $request)
     {
-        if (isset($request->hanetpersonid)) {
+        if (isset($request->studentid)) {
             $existPersonID = DB::table('interns__students')
-                                ->where('hanetpersonid', $request->hanetpersonid)
+                                ->where('studentid', $request->studentid)
                                 ->exists();
             if ($existPersonID) {
                 $schools = DB::table('interns__schools')
@@ -101,7 +101,7 @@ class StudentController extends AdminBaseController
                             ->get();
 
                 $student['faculty'] = $request->faculty;
-                $warnings = '<script>alert("Đã có sinh viên sở hữu PersonID vừa nhập");</script>';
+                $warnings = '<script>alert("Đã có sinh viên sở hữu MSSV vừa nhập");</script>';
                 return view('interns::admin.students.create', compact('listschools', 'faculties', 'warnings', 'student'));
             }
         }
@@ -198,10 +198,10 @@ class StudentController extends AdminBaseController
      */
     public function update(Student $student, UpdateStudentRequest $request)
     {
-        if (isset($request->hanetpersonid)) {
+        if (isset($request->studentid)) {
             $existPersonID = DB::table('interns__students')
                                 ->where('id', '!=', $student->id)
-                                ->where('hanetpersonid', $request->hanetpersonid)
+                                ->where('studentid', $request->studentid)
                                 ->exists();
 
             if ($existPersonID) {
@@ -220,7 +220,7 @@ class StudentController extends AdminBaseController
                             ->get();
 
                 $student['faculty'] = $request->faculty;
-                $warnings = '<script>alert("Đã có sinh viên sở hữu PersonID vừa nhập");</script>';
+                $warnings = '<script>alert("Đã có sinh viên sở hữu MSSV vừa nhập");</script>';
                 return view('interns::admin.students.edit', compact('listschools', 'faculties', 'warnings', 'student'));
             }
         }
