@@ -122,7 +122,17 @@ class HistoryController extends AdminBaseController
      * @return Response
      */
     public function store(CreateHistoryRequest $request)
-    {   
+    {
+        $personID = DB::table('interns__students')
+                    ->select('hanetpersonid')
+                    ->where('id', $request->student)
+                    ->get();
+        if (count($personID) == 0) {
+            $warnings = '<script>alert("Student chưa có HanetPersonID");</script>';
+            return redirect()->route('admin.interns.history.index')->with('warnings', $warnings);
+        }
+
+
         $post = [
             'token' =>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNzQwNjQzMTE2Mzg5MzIyMjQiLCJlbWFpbCI6ImxlZHVjdG9hbkBsZWR1Y3RvYW4uY29tIiwiY2xpZW50X2lkIjoiYzNiYjU3MDVmM2Y3ZjcyMDI3ZWYwZmJmMmRkYmQ1MjQiLCJ0eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwiaWF0IjoxNjYzNzU2MDExLCJleHAiOjE2NjYzNDgwMTF9.abnKUVTMFnkASlvP_IpiKQLocQyhl5Q96TdoxPg18lo',
             'placeID' => '8037',
@@ -132,8 +142,7 @@ class HistoryController extends AdminBaseController
             'exType' => '4,2',
             'type' => '0',
             // 'aliasID' => $request->student,
-            'aliasID' => '1',
-            // 'personID' => '2281795527',
+            'personID' => $personID[0]->hanetpersonid,
         ];
 
         $curl = curl_init();

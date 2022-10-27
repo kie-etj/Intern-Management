@@ -19,6 +19,7 @@ class Student extends Model
         'faculty',
         'year',
         'avatar',
+        'hanetpersonid',
         'lecturername',
         'lectureremail',
         'lecturerphone',

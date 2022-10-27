@@ -20,6 +20,8 @@
         {!! Form::normalInputOfType('email', 'lectureremail', 'Lecturer Email', $errors) !!}
 
         {!! Form::normalInput('lecturerphone', 'Lecturer Phone', $errors) !!}
+
+        {!! Form::normalInput('hanetpersonid', 'Hanet Person ID', $errors) !!}
     </div>
     <div class="col-md-4">
         {!! Form::normalFile('avatar', 'Avatar', $errors, null, ['accept' => 'image/*']) !!}

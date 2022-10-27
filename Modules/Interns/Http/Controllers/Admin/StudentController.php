@@ -81,12 +81,36 @@ class StudentController extends AdminBaseController
      */
     public function store(CreateStudentRequest $request)
     {
-        $exists = DB::table('interns__students')
+        if (isset($request->hanetpersonid)) {
+            $existPersonID = DB::table('interns__students')
+                                ->where('hanetpersonid', $request->hanetpersonid)
+                                ->exists();
+            if ($existPersonID) {
+                $schools = DB::table('interns__schools')
+                            ->select('id', 'fullname')
+                            ->orderBy('fullname')
+                            ->get();
+                $listschools = [];
+                foreach ($schools as $key => $value) {
+                    $listschools[$value->id] = $value->fullname;
+                }
+
+                $faculties = DB::table('interns__faculties')
+                            ->select('id', 'school', 'facultyname')
+                            ->orderBy('facultyname')
+                            ->get();
+
+                $student['faculty'] = $request->faculty;
+                $warnings = '<script>alert("Đã có sinh viên sở hữu PersonID vừa nhập");</script>';
+                return view('interns::admin.students.create', compact('listschools', 'faculties', 'warnings', 'student'));
+            }
+        }
+
+        $existEmail = DB::table('interns__students')
                     ->where('email', $request->email)
-                    ->orWhere('phone', $request->phone)
                     ->exists();
 
-        if ($exists) {
+        if ($existEmail) {
             $schools = DB::table('interns__schools')
                     ->select('id', 'fullname')
                     ->orderBy('fullname')
@@ -102,7 +126,7 @@ class StudentController extends AdminBaseController
                         ->get();
 
             $student['faculty'] = $request->faculty;
-            $warnings = '<script>alert("Đã có sinh viên sở hữu email hoặc số điện thoại vừa nhập");</script>';
+            $warnings = '<script>alert("Đã có sinh viên sở hữu email vừa nhập");</script>';
             return view('interns::admin.students.create', compact('listschools', 'faculties', 'warnings', 'student'));
         } else {
             $input = $request->all();
@@ -133,34 +157,6 @@ class StudentController extends AdminBaseController
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
-
-            // $fullname = explode(' ', $input['fullname']);
-            // $firstname = null; $lastname = null;
-            // if (count($fullname) == 1) {
-            //     $lastname = $fullname[0];
-            // } else {
-            //     $firstname = $fullname[0];
-            //     for ($i=1; $i < count($fullname); $i++) { 
-            //         $lastname .= $fullname[$i] . ' ';
-            //     }
-            // }
-            // $lastname = trim($lastname);
-    
-            // $id = DB::table('users')->insertGetId([
-            //         'email' => $input['email'],
-            //         'password' => Hash::make('123'),
-            //         'first_name' => $firstname,
-            //         'last_name' => $lastname,
-            //         'created_at' => now(),
-            //         'updated_at' => now(),
-            // ]);
-
-            // DB::table('role_users')->insert([
-            //         'user_id' => $id,
-            //         'role_id' => 3,
-            //         'created_at' => now(),
-            //         'updated_at' => now(),
-            // ]);
 
             return redirect()->route('admin.interns.student.index')
                 ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::students.title.students')]));
@@ -202,13 +198,36 @@ class StudentController extends AdminBaseController
      */
     public function update(Student $student, UpdateStudentRequest $request)
     {
+        if (isset($request->hanetpersonid)) {
+            $existPersonID = DB::table('interns__students')
+                                ->where('id', '!=', $student->id)
+                                ->where('hanetpersonid', $request->hanetpersonid)
+                                ->exists();
+
+            if ($existPersonID) {
+                $schools = DB::table('interns__schools')
+                        ->select('id', 'fullname')
+                        ->orderBy('fullname')
+                        ->get();
+                $listschools = [];
+                foreach ($schools as $key => $value) {
+                    $listschools[$value->id] = $value->fullname;
+                }
+
+                $faculties = DB::table('interns__faculties')
+                            ->select('id', 'school', 'facultyname')
+                            ->orderBy('facultyname')
+                            ->get();
+
+                $student['faculty'] = $request->faculty;
+                $warnings = '<script>alert("Đã có sinh viên sở hữu PersonID vừa nhập");</script>';
+                return view('interns::admin.students.edit', compact('listschools', 'faculties', 'warnings', 'student'));
+            }
+        }
 
         $exists = DB::table('interns__students')
                     ->where('id', '!=', $student->id)
-                    ->where(function($query) use ($request) {
-                        $query ->where('email', $request->email)
-                            ->orWhere('phone', $request->phone);
-                    })
+                    ->where('email', $request->email)
                     ->exists();
         
         if ($exists) {
@@ -226,7 +245,7 @@ class StudentController extends AdminBaseController
                         ->orderBy('facultyname')
                         ->get();
 
-            $warnings = '<script>alert("Đã có sinh viên sở hữu email hoặc số điện thoại vừa nhập");</script>';
+            $warnings = '<script>alert("Đã có sinh viên sở hữu email vừa nhập");</script>';
             return view('interns::admin.students.edit', compact('student', 'listschools', 'faculties', 'warnings'));
         } else {
             $input = $request->all();

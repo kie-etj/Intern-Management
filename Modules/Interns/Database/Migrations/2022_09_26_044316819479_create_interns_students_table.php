@@ -24,6 +24,7 @@ class CreateInternsStudentsTable extends Migration
             $table->string('faculty');
             $table->integer('year');
             $table->string('avatar');
+            $table->string('hanetpersonid');
             $table->string('lecturername');
             $table->string('lectureremail');
             $table->string('lecturerphone');
