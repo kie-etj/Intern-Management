@@ -37,17 +37,14 @@ class Intern_DiaryController extends AdminBaseController
             $intern_diaries = DB::table('interns__intern_diaries')
                                 ->select('interns__intern_diaries.id', 'interns__students.fullname AS student', 'interns__students.position', 'task', 'startdate', 'enddate', 'status')
                                 ->join('interns__students', 'interns__students.id', 'interns__intern_diaries.student')
-                                ->join('interns__schedules', 'interns__schedules.student', 'interns__students.id')
                                 ->get();
         } else {
             $intern_diaries = DB::table('interns__intern_diaries')
                                 ->select('interns__intern_diaries.id', 'interns__students.fullname AS student', 'interns__students.position', 'task', 'startdate', 'enddate', 'status')
                                 ->join('interns__students', 'interns__students.id', 'interns__intern_diaries.student')
-                                ->join('interns__schedules', 'interns__schedules.student', 'interns__students.id')
                                 ->where('email', auth()->user()->email)
                                 ->get();
         }
-
         foreach ($intern_diaries as $key => $value) {
             if ($value->status == 'Done') {
                 $value->statistic = 'Done';
@@ -61,7 +58,6 @@ class Intern_DiaryController extends AdminBaseController
                 $value->statistic = 'New';
             }
         }
-
         return view('interns::admin.intern_diaries.index', compact('intern_diaries'));
     }
 
