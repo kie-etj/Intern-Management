@@ -21,7 +21,7 @@
     
         {!! Form::normalInput('lecturerphone', 'Lecturer Phone', $errors, $student) !!}
 
-        {!! Form::normalInput('hanetpersonid', 'Hanet Person ID', $errors, $student) !!}
+        {!! Form::normalInput('studentid', 'Student ID', $errors, $student) !!}
     </div>
     <div class="col-md-4">
         {!! Form::normalFile('avatar', 'Avatar', $errors, ['accept' => 'image/*']) !!}

@@ -202,11 +202,6 @@ $router->group(['prefix' =>'/interns'], function (Router $router) {
         'uses' => 'HistoryController@destroy',
         'middleware' => 'can:interns.histories.destroy'
     ]);
-    $router->any('histories/hanet', [
-        'as' => 'admin.interns.history.hanet',
-        'uses' => 'HistoryController@hanet',
-        'middleware' => 'can:interns.histories.hanet'
-    ]);
     $router->get('fullcalendar','ScheduleController@index');
     $router->post('fullcalendar-ajax','ScheduleController@calendarEvents');
 // append

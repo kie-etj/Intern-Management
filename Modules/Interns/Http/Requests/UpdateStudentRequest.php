@@ -15,6 +15,7 @@ class UpdateStudentRequest extends BaseFormRequest
             'phone' => 'required|numeric|digits:10',
             'school' => 'required',
             'faculty' => 'required',
+            'studentid' => 'required',
         ];
     }
 

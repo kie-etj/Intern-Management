@@ -26,53 +26,6 @@ class HistoryController extends AdminBaseController
         $this->history = $history;
     }
 
-    public function hanet(Request $request)
-    {
-        $post = [
-            'token' =>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNzQwNjQzMTE2Mzg5MzIyMjQiLCJlbWFpbCI6ImxlZHVjdG9hbkBsZWR1Y3RvYW4uY29tIiwiY2xpZW50X2lkIjoiYzNiYjU3MDVmM2Y3ZjcyMDI3ZWYwZmJmMmRkYmQ1MjQiLCJ0eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwiaWF0IjoxNjY2ODYyODE0LCJleHAiOjE2OTgzOTg4MTR9.FRV12hDyk-zJ-Y0UNxTtwzeOB9-o3cAPvwnXrrEI5As',
-            'placeID' => '8037',
-            'devices' => 'C21024B609',
-            // 'personID' => '2281795527890698240',
-            // 'aliasID' => '197CT31392',
-            'date' => '2022-10-27',
-            'exType' => '4,2',
-            'type' => '0',
-        ];
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://partner.hanet.ai/person/getCheckinByPlaceIdInDay',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $post,
-        ));
-
-        $response = json_decode(curl_exec($curl));
-        
-
-        curl_close($curl);
-        
-        // $time = $response->data[0]->checkinTime;
-        // echo $response;
-        // dd($request);
-
-        // echo date('H:i:s', substr($time, 0, -3));
-        dd($response);
-
-        // DB::table('interns__histories')
-        //     ->insert([
-        //         'student' => $request->aliasID,
-        //         'date' => $request->date,
-                
-        //     ]);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -124,7 +77,7 @@ class HistoryController extends AdminBaseController
     public function store(CreateHistoryRequest $request)
     {
         $personID = DB::table('interns__students')
-                    ->select('hanetpersonid')
+                    ->select('studentid')
                     ->where('id', $request->student)
                     ->get();
         if (count($personID) == 0) {
@@ -134,15 +87,15 @@ class HistoryController extends AdminBaseController
 
 
         $post = [
-            'token' =>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNzQwNjQzMTE2Mzg5MzIyMjQiLCJlbWFpbCI6ImxlZHVjdG9hbkBsZWR1Y3RvYW4uY29tIiwiY2xpZW50X2lkIjoiYzNiYjU3MDVmM2Y3ZjcyMDI3ZWYwZmJmMmRkYmQ1MjQiLCJ0eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwiaWF0IjoxNjYzNzU2MDExLCJleHAiOjE2NjYzNDgwMTF9.abnKUVTMFnkASlvP_IpiKQLocQyhl5Q96TdoxPg18lo',
-            'placeID' => '8037',
-            'devices' => 'C21024B609',
+            'token' => env('HANET_TOKEN'),
+            'placeID' => env('HANET_PLACEID'),
+            'devices' => env('HANET_DEVICES'),
             'date' => $request->date,
             // 'date' => '2022-10-17',
             'exType' => '4,2',
             'type' => '0',
-            // 'aliasID' => $request->student,
-            'personID' => $personID[0]->hanetpersonid,
+            'aliasID' => $personID[0]->studentid,
+            // 'personID' => $personID[0]->studentid,
         ];
 
         $curl = curl_init();

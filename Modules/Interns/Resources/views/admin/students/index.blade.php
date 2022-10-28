@@ -35,10 +35,10 @@
                                 <th>Date of Birth</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Student ID</th>
                                 <th>Position</th>
                                 <th>School</th>
                                 <th>Faculty</th>
-                                <th>Year</th>
                                 <th>Lecturer Name</th>
                                 <th>Lecturer Email</th>
                                 <th>Phone</th>
@@ -65,6 +65,9 @@
                                     {{ $student->phone }}
                                 </td>
                                 <td>
+                                    {{ $student->studentid }}
+                                </td>
+                                <td>
                                     {{ $student->position }}
                                 </td>
                                 <td>
@@ -72,9 +75,6 @@
                                 </td>
                                 <td>
                                     {{ $student->faculty }}
-                                </td>
-                                <td>
-                                    {{ $student->year }}
                                 </td>
                                 <td>
                                     {{ $student->lecturername }}
@@ -108,10 +108,10 @@
                                 <th>Date of Birth</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Student ID</th>
                                 <th>Position</th>
                                 <th>School</th>
                                 <th>Faculty</th>
-                                <th>Year</th>
                                 <th>Lecturer Name</th>
                                 <th>Lecturer Email</th>
                                 <th>Phone</th>
