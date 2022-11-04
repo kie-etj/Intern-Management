@@ -60,10 +60,12 @@ class UserController extends Controller
 
     public function update(User $user, UpdateUserRequest $request)
     {
+        
         $data = $this->mergeRequestWithPermissions($request);
 
+        $data['activated'] = $data['is_activated'];
         $this->user->updateAndSyncRoles($user->id, $data, $request->get('roles'));
-
+        
         return response()->json([
             'errors' => false,
             'message' => trans('user::messages.user updated'),

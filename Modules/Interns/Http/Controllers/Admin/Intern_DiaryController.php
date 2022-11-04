@@ -44,7 +44,7 @@ class Intern_DiaryController extends AdminBaseController
                                 ->join('interns__students', 'interns__students.id', 'interns__intern_diaries.student')
                                 ->where('email', auth()->user()->email)
                                 ->get();
-        }
+        } 
         foreach ($intern_diaries as $key => $value) {
             if ($value->status == 'Done') {
                 $value->statistic = 'Done';

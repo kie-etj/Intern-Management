@@ -33,23 +33,35 @@ class ScheduleController extends AdminBaseController
      */
     public function index(Request $request)
     {
-        // dd($request->ajax());
-        // $schedules = $this->schedule->all();
-        if($request->ajax()) {  
-            $data = DB::table('interns__fullcalendars')
-                ->select('id', 'student', 'title', 'start', 'end')
-                ->where('start', '>=', $request->start)
-                ->where('end', '<=', $request->end)
-                ->get();
-            return response()->json($data);
+        if (auth()->user()->roles[0]->id == 1) {
+            if($request->ajax()) {  
+                $data = DB::table('interns__fullcalendars')
+                    ->select('interns__fullcalendars.id', 'interns__students.fullname AS student', 'title', 'start', 'end')
+                    ->join('interns__students', 'interns__students.id', 'interns__fullcalendars.student')
+                    ->where('start', '>=', $request->start)
+                    ->where('end', '<=', $request->end)
+                    ->get();
+                return response()->json($data);
+            }
+            // $schedules = $this->schedule->all();
+            $schedules = DB::table('interns__schedules')
+                            ->select('interns__schedules.id', 'fullname', 'position', 'schedule', 'interns__schedules.created_at')
+                            ->join('interns__students', 'interns__students.id', 'interns__schedules.student')
+                            ->orderBy('position')
+                            ->get();    
+        } else {
+            if($request->ajax()) {  
+                $data = DB::table('interns__fullcalendars')
+                    ->select('interns__fullcalendars.id', 'interns__students.fullname AS student', 'title', 'start', 'end')
+                    ->join('interns__students', 'interns__students.id', 'interns__fullcalendars.student')
+                    ->where('email', auth()->user()->email)
+                    ->where('start', '>=', $request->start)
+                    ->where('end', '<=', $request->end)
+                    ->get();
+                return response()->json($data);
+            }
+            $schedules = 'Intern';
         }
-
-        $schedules = DB::table('interns__schedules')
-                        ->select('interns__schedules.id', 'fullname', 'position', 'schedule', 'interns__schedules.created_at')
-                        ->join('interns__students', 'interns__students.id', 'interns__schedules.student')
-                        ->orderBy('position')
-                        ->get();
-
         return view('interns::admin.schedules.index', compact('schedules'));
     }
 
@@ -157,7 +169,6 @@ class ScheduleController extends AdminBaseController
      */
     public function update(Schedule $schedule, UpdateScheduleRequest $request)
     {
-        dd($request->ajax());
         if (isset($request->schedules)) {
             $schedules = $request->schedules;
             asort($schedules);
@@ -192,46 +203,50 @@ class ScheduleController extends AdminBaseController
             ->withSuccess(trans('core::core.messages.resource deleted', ['name' => trans('interns::schedules.title.schedules')]));
     }
 
-    // FullCalendar
-    public function calendarEvents(Request $request)
+    public function createEvents(Request $request)
     {
-        dd($request->all());
         switch ($request->type) {
-           case 'create':
-              $event = CrudEvents::create([
-                  'event_name' => $request->event_name,
-                  'event_start' => $request->event_start,
-                  'event_end' => $request->event_end,
-              ]);
-              $event = DB::table('interns__fullcalendars')
+            case 'create':
+                $student = DB::table('interns__students')
+                    ->select('id')
+                    ->where('email', auth()->user()->email)
+                    ->get()[0]->id;
+
+                $event = DB::table('interns__fullcalendars')
                         ->insert([
-                            'event_name' => $request->event_name,
-                            'event_start' => $request->event_start,
-                            'event_end' => $request->event_end,
+                            'student' => $student,
+                            'title' => $request->event_name,
+                            'start' => $request->event_start,
+                            'end' => $request->event_end,
+                            'created_at' => now(),
+                            'updated_at' => now(),
                         ]);
  
               return response()->json($event);
              break;
   
-           case 'edit':
-              $event = CrudEvents::find($request->id)->update([
-                  'event_name' => $request->event_name,
-                  'event_start' => $request->event_start,
-                  'event_end' => $request->event_end,
-              ]);
- 
-              return response()->json($event);
-             break;
+            case 'edit':
+                $event = DB::table('interns__fullcalendars')
+                        ->where('id', $request->id)
+                        ->update([
+                            'title' => $request->event_name,
+                            'start' => $request->event_start,
+                            'end' => $request->event_end,
+                            'updated_at' => now(),
+                        ]);
+                return response()->json($event);
+                break;
   
            case 'delete':
-              $event = CrudEvents::find($request->id)->delete();
-  
-              return response()->json($event);
-             break;
+                $event = DB::table('interns__fullcalendars')->where('id', $request->id)->delete();
+
+                return response()->json($event);
+                break;
              
            default:
-             # ...
-             break;
+                # ...
+                break;
         }
     }
+    
 }

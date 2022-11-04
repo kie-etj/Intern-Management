@@ -35,7 +35,9 @@ class InternsServiceProvider extends ServiceProvider
             $event->load('schedules', array_dot(trans('interns::schedules')));
             $event->load('intern_diaries', array_dot(trans('interns::intern_diaries')));
             $event->load('histories', array_dot(trans('interns::histories')));
+            $event->load('registers', array_dot(trans('interns::registers')));
             // append translations
+
 
 
 
@@ -136,7 +138,20 @@ class InternsServiceProvider extends ServiceProvider
                 return new \Modules\Interns\Repositories\Cache\CacheHistoryDecorator($repository);
             }
         );
+        $this->app->bind(
+            'Modules\Interns\Repositories\RegisterRepository',
+            function () {
+                $repository = new \Modules\Interns\Repositories\Eloquent\EloquentRegisterRepository(new \Modules\Interns\Entities\Register());
+
+                if (! config('app.cache')) {
+                    return $repository;
+                }
+
+                return new \Modules\Interns\Repositories\Cache\CacheRegisterDecorator($repository);
+            }
+        );
 // add bindings
+
 
 
 

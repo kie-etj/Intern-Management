@@ -22,6 +22,12 @@
             </div>
             <div class="box box-primary">
                 <div class="box-header">
+                    <div>
+                        <label for="" class="col-md-12">Filter</label>
+                        <div id="filter-5" class="col-md-3"></div>
+                        <div id="filter-6" class="col-md-3"></div>
+                        <div id="filter-8" class="col-md-3"></div>
+                    </div>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
@@ -32,7 +38,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Full Name</th>
-                                <th>Date of Birth</th>
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Student ID</th>
@@ -54,9 +59,6 @@
                                 </td>
                                 <td style="font-weight: bold;">
                                     {{ $student->fullname }}
-                                </td>
-                                <td>
-                                    {{ $student->dateofbirth }}
                                 </td>
                                 <td>
                                     {{ $student->email }}
@@ -105,7 +107,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Full Name</th>
-                                <th>Date of Birth</th>
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Student ID</th>
@@ -166,11 +167,12 @@
                 initComplete: function () {
                     this.api()
                         .columns()
-                        .every(function () {
+                        .every(function (d) {
                             var column = this;
-                            if (!column.data()[0].startsWith("<div")) {
-                                var select = $('<select><option value="">All</option></select>')
-                                    .appendTo($(column.footer()).empty())
+                            var theadname = $("#DataTables_Table_0_wrapper th").eq([d]).text();
+                            if (column[0] == 5 || column[0] == 6 || column[0] == 8) {
+                                var select = $('<select class="form-control"><option value="">'+ theadname +'</option></select>')
+                                    .appendTo($('#filter-'+column[0]))
                                     .on('change', function () {
                                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
                                         column.search(val ? '^' + val + '$' : '', true, false).draw();
@@ -181,9 +183,8 @@
                                     .unique()
                                     .sort()
                                     .each(function (d, j) {
-                                        text = d.length > 10 ? d.substring(0, 8) + '...' : d;
                                         if (d.length > 0) {
-                                            select.append('<option value="' + d + '">' + text + '</option>');
+                                            select.append('<option value="' + d + '">' + d + '</option>');
                                         }
                                     });
                             }

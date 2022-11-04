@@ -58,9 +58,9 @@ class SentinelUserRepository implements UserRepository
 
         if ($activated) {
             $this->activateUser($user);
-            event(new UserWasCreated($user));
+            // event(new UserWasCreated($user));
         } else {
-            event(new UserHasRegistered($user));
+            // event(new UserHasRegistered($user));
         }
         app(\Modules\User\Repositories\UserTokenRepository::class)->generateFor($user->id);
 

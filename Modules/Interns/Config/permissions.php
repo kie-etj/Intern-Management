@@ -36,9 +36,15 @@ return [
         'create' => 'interns::histories.create resource',
         'edit' => 'interns::histories.edit resource',
         'destroy' => 'interns::histories.destroy resource',
-        // 'hanet' => 'interns::histories.hanet resource',
+    ],
+    'interns.registers' => [
+        'index' => 'interns::registers.list resource',
+        'create' => 'interns::registers.create resource',
+        'edit' => 'interns::registers.edit resource',
+        'destroy' => 'interns::registers.destroy resource',
     ],
 // append
+
 
 
 

@@ -13,6 +13,8 @@ use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Modules\User\Permissions\PermissionManager;
+use Modules\User\Repositories\UserRepository;
 
 class StudentController extends AdminBaseController
 {
@@ -20,14 +22,15 @@ class StudentController extends AdminBaseController
      * @var StudentRepository
      */
     private $student;
-
-    public function __construct(StudentRepository $student)
+    private $user;
+    
+    public function __construct(StudentRepository $student, UserRepository $user, PermissionManager $permissions)
     {
         parent::__construct();
-
         $this->student = $student;
+        $this->user = $user;
+        $this->permissions = $permissions;
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -132,7 +135,7 @@ class StudentController extends AdminBaseController
             $input = $request->all();
             $input['avatar'] = null;
             
-            $this->student->create($input);
+            $student = $this->student->create($input);
             
             $id = DB::table('interns__students')
                     ->select('id')
@@ -149,7 +152,9 @@ class StudentController extends AdminBaseController
                 DB::table('interns__students')
                     ->where('id' , $id)
                     ->update(['avatar' => $avatar_name]);
-            }            
+
+
+            }  
 
             DB::table('interns__schedules')
                 ->insert([
@@ -157,6 +162,29 @@ class StudentController extends AdminBaseController
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
+
+            // Handle Create Account
+            if ($student) {
+                $fullname = explode(' ', $input['fullname']);
+                $firstname = null; $lastname = null;
+                if (count($fullname) == 1) {
+                    $lastname = $fullname[0];
+                } else {
+                    $firstname = $fullname[0];
+                    for ($i=1; $i < count($fullname); $i++) { 
+                        $lastname .= $fullname[$i] . ' ';
+                    }
+                }
+                $lastname = trim($lastname);
+                $data = [
+                    'email' => $request->email,
+                    'password' => 123,
+                    'first_name' => $firstname,
+                    'last_name' => $lastname,
+                ];
+
+                $this->user->createWithRoles($data, [3], true);
+            }
 
             return redirect()->route('admin.interns.student.index')
                 ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::students.title.students')]));

@@ -33,12 +33,21 @@ class HistoryController extends AdminBaseController
      */
     public function index()
     {
-        // $histories = $this->history->all();
-        $histories = DB::table('interns__histories')
-            ->select('interns__histories.id', 'interns__students.fullname AS student',
-                    'date', 'firsttime', 'firstimage', 'lasttime', 'lastimage')
-            ->join('interns__students', 'interns__students.id', 'interns__histories.student')
-            ->get();
+        if (auth()->user()->roles[0]->id == 1) {
+            // $histories = $this->history->all();
+            $histories = DB::table('interns__histories')
+                ->select('interns__histories.id', 'interns__students.fullname AS student',
+                        'date', 'firsttime', 'firstimage', 'lasttime', 'lastimage')
+                ->join('interns__students', 'interns__students.id', 'interns__histories.student')
+                ->get();
+        } else {
+            $histories = DB::table('interns__histories')
+                ->select('interns__histories.id', 'interns__students.fullname AS student',
+                        'date', 'firsttime', 'firstimage', 'lasttime', 'lastimage')
+                ->join('interns__students', 'interns__students.id', 'interns__histories.student')
+                ->where('email', auth()->user()->email)
+                ->get();
+        }
 
         return view('interns::admin.histories.index', compact('histories'));
     }
@@ -76,12 +85,12 @@ class HistoryController extends AdminBaseController
      */
     public function store(CreateHistoryRequest $request)
     {
-        $personID = DB::table('interns__students')
+        $studentID = DB::table('interns__students')
                     ->select('studentid')
                     ->where('id', $request->student)
                     ->get();
-        if (count($personID) == 0) {
-            $warnings = '<script>alert("Student chưa có HanetPersonID");</script>';
+        if (count($studentID) == 0) {
+            $warnings = '<script>alert("Student chưa có StudentID");</script>';
             return redirect()->route('admin.interns.history.index')->with('warnings', $warnings);
         }
 
@@ -91,11 +100,9 @@ class HistoryController extends AdminBaseController
             'placeID' => env('HANET_PLACEID'),
             'devices' => env('HANET_DEVICES'),
             'date' => $request->date,
-            // 'date' => '2022-10-17',
             'exType' => '4,2',
             'type' => '0',
-            'aliasID' => $personID[0]->studentid,
-            // 'personID' => $personID[0]->studentid,
+            'aliasID' => $studentID[0]->studentid,
         ];
 
         $curl = curl_init();
@@ -115,7 +122,7 @@ class HistoryController extends AdminBaseController
         $response = json_decode(curl_exec($curl));
         
         curl_close($curl);
-        dd($response);
+
         if (count((array)($response->data)) > 0) {
             $first = $response->data[0];
             $last = $response->data[count($response->data)-1];
@@ -124,7 +131,7 @@ class HistoryController extends AdminBaseController
             return redirect()->route('admin.interns.history.index')->with('warnings', $warnings);
         }
 
-        // dd($response);
+        
         DB::table('interns__histories')
             ->updateOrInsert(
                 [

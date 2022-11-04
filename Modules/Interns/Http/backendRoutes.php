@@ -202,9 +202,43 @@ $router->group(['prefix' =>'/interns'], function (Router $router) {
         'uses' => 'HistoryController@destroy',
         'middleware' => 'can:interns.histories.destroy'
     ]);
-    $router->get('fullcalendar','ScheduleController@index');
-    $router->post('fullcalendar-ajax','ScheduleController@calendarEvents');
+    $router->post('fullcalendar-ajax', 'ScheduleController@createEvents');
+    
+    $router->bind('register', function ($id) {
+        return app('Modules\Interns\Repositories\RegisterRepository')->find($id);
+    });
+    $router->get('registers', [
+        'as' => 'admin.interns.register.index',
+        'uses' => 'RegisterController@index',
+        'middleware' => 'can:interns.registers.index'
+    ]);
+    $router->get('registers/create', [
+        'as' => 'admin.interns.register.create',
+        'uses' => 'RegisterController@create',
+        'middleware' => 'can:interns.registers.create'
+    ]);
+    $router->post('registers', [
+        'as' => 'admin.interns.register.store',
+        'uses' => 'RegisterController@store',
+        'middleware' => 'can:interns.registers.create'
+    ]);
+    $router->get('registers/{register}/edit', [
+        'as' => 'admin.interns.register.edit',
+        'uses' => 'RegisterController@edit',
+        'middleware' => 'can:interns.registers.edit'
+    ]);
+    $router->put('registers/{register}', [
+        'as' => 'admin.interns.register.update',
+        'uses' => 'RegisterController@update',
+        'middleware' => 'can:interns.registers.edit'
+    ]);
+    $router->delete('registers/{register}', [
+        'as' => 'admin.interns.register.destroy',
+        'uses' => 'RegisterController@destroy',
+        'middleware' => 'can:interns.registers.destroy'
+    ]);
 // append
+
 
 
 

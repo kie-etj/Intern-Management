@@ -27,6 +27,7 @@
                 <div class="box-body">
                     <div id='full-calendar'></div>
                     <br>
+                    <?php if ($schedules != 'Intern'): ?>
                     <div class="table-responsive">
                         @include('interns::admin.schedules.partials.schedule-fields')
                         <table class="data-table table table-bordered table-hover">
@@ -92,6 +93,7 @@
                         </table>
                         <!-- /.box-body -->
                     </div>
+                    <?php endif; ?>
                 </div>
                 <!-- /.box -->
             </div>
@@ -146,6 +148,29 @@
     <!-- Schedule -->
     <script>
         const schedules = <?= json_encode($schedules); ?>;
+        const positionColor = {
+            'DESIGN': '#f00',
+            'FRONT-END': '#00f',
+            'BACK-END': '#000',
+            'MARKETING': '#ff0',
+            'BA': '#0f0',
+            'TESTER': '#f0f',
+        }
+
+        for (const key in positionColor) {
+            if (Object.hasOwnProperty.call(positionColor, key)) {
+                const element = positionColor[key];
+                if (document.getElementById("legend")) {
+                    document.getElementById("legend").innerHTML +=
+                        `<p style="color: ${element}"><b>${key}</b></p>`;
+                }
+            }
+        }
+
+        function showLegend() {
+            var legend = document.getElementById("legend");
+            legend.classList.toggle("show-legend");
+        }
 
         function workSessionCase(sessionID) {
             switch (sessionID) {
@@ -166,23 +191,27 @@
                 default: text = ''; break;
             }
             return text;
+        }        
+
+        if (schedules != 'Intern') {
+            schedules.forEach(element => {
+                element.schedule = element.schedule.split(",")
+            });
+
+            schedules.forEach(element => {
+                element.schedule.forEach(item => {
+                    $(`#session-${item}`).append(
+                        `<p style="color: ${positionColor[element.position.toUpperCase()]}"><b>${element.fullname}</b></p>`
+                    );
+
+                    $(`#student-${element.id}`).find('a').append(
+                        `<p>${workSessionCase(item)}</p>`
+                    );
+                });
+            });       
         }
         
-        schedules.forEach(element => {
-            element.schedule = element.schedule.split(",")
-        });
-
-        schedules.forEach(element => {
-            element.schedule.forEach(item => {
-                $(`#session-${item}`).append(
-                    `<p>${element.fullname}, ${element.position}</p>`
-                );
-
-                $(`#student-${element.id}`).find('a').append(
-                    `<p>${workSessionCase(item)}</p>`
-                );
-            });
-        });
+            
     </script>
     <!-- FullCalendar -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> -->
@@ -198,9 +227,27 @@
                 }
             });
             var calendar = $('#full-calendar').fullCalendar({
+                header: {
+                    left:   'agendaWeek listWeek',
+                    center: 'title',
+                    right:  'today prev,next'
+                },
+                height: 500,
+                titleFormat: 'DD/MM/YYYY',
+                defaultView: 'agendaWeek',
+                allDaySlot: false,
+                columnHeaderFormat: 'ddd DD/MM',
+                firstDay: 1,
+                nowIndicator: true,
+                businessHours: {
+                    dow: [ 1, 2, 3, 4, 5, 6 ],
+                    start: '08:00',
+                    end: '18:00',
+                },
+
                 editable: true,
                 editable: true,
-                events: SITEURL + "/fullcalendar",
+                events: SITEURL + "/schedules",
                 displayEventTime: true,
                 eventRender: function (event, element, view) {
                     if (event.allDay === 'true') {
@@ -208,11 +255,18 @@
                     } else {
                         event.allDay = false;
                     }
+                    element.popover({
+                        title: event.student,
+                        content: event.title,
+                        trigger: 'hover',
+                        placement: 'top',
+                        container: 'body',
+                    });
                 },
                 selectable: true,
                 selectHelper: true,
                 select: function (event_start, event_end, allDay) {
-                    var event_name = prompt('Event Name:');
+                    var event_name = prompt('Schedule Notes:');
                     if (event_name) {
                         var event_start = $.fullCalendar.formatDate(event_start, "Y-MM-DD HH:mm:ss");
                         var event_end = $.fullCalendar.formatDate(event_end, "Y-MM-DD HH:mm:ss");
@@ -226,7 +280,7 @@
                             },
                             type: "POST",
                             success: function (data) {
-                                displayMessage("Event created.");
+                                displayMessage("Create Schedule Successful!!!");
                                 calendar.fullCalendar('renderEvent', {
                                     id: data.id,
                                     title: event_name,
@@ -239,26 +293,26 @@
                         });
                     }
                 },
-                eventDrop: function (event, delta) {
-                    var event_start = $.fullCalendar.formatDate(event.start, "Y-MM-DD");
-                    var event_end = $.fullCalendar.formatDate(event.end, "Y-MM-DD");
-                    $.ajax({
-                        url: SITEURL + '/fullcalendar-ajax',
-                        data: {
-                            title: event.event_name,
-                            start: event_start,
-                            end: event_end,
-                            id: event.id,
-                            type: 'edit'
-                        },
-                        type: "POST",
-                        success: function (response) {
-                            displayMessage("Event updated");
-                        }
-                    });
-                },
+                // eventDrop: function (event, delta) {
+                //     var event_start = $.fullCalendar.formatDate(event.start, "Y-MM-DD");
+                //     var event_end = $.fullCalendar.formatDate(event.end, "Y-MM-DD");
+                //     $.ajax({
+                //         url: SITEURL + '/fullcalendar-ajax',
+                //         data: {
+                //             event_name: event.event_name,
+                //             event_start: event_start,
+                //             event_end: event_end,
+                //             id: event.id,
+                //             type: 'edit'
+                //         },
+                //         type: "POST",
+                //         success: function (response) {
+                //             displayMessage("Update Schedule Successful!!!");
+                //         }
+                //     });
+                // },
                 eventClick: function (event) {
-                    var eventDelete = confirm("Are you sure?");
+                    var eventDelete = confirm("Delete this Schedule???");
                     if (eventDelete) {
                         $.ajax({
                             type: "POST",
@@ -269,7 +323,7 @@
                             },
                             success: function (response) {
                                 calendar.fullCalendar('removeEvents', event.id);
-                                displayMessage("Event removed");
+                                displayMessage("Removed Schedule!!!");
                             }
                         });
                     }

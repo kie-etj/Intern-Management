@@ -1,7 +1,14 @@
 <div class="box-body">
-    {!! Form::normalInput('shortname', 'Short name', $errors) !!}
+    <div class="col-md-6">
+        {!! Form::normalInput('shortname', 'Short name', $errors) !!}
 
-    {!! Form::normalInput('fullname', 'Full name', $errors) !!}
+        {!! Form::normalInput('fullname', 'Full name', $errors) !!}
+    </div>
+    <div class="col-md-6">
+        {!! Form::normalInput('logo', 'Logo', $errors) !!}
 
-    {!! Form::normalInput('webpage', 'Web page', $errors) !!}
+        {!! Form::normalInput('webpage', 'Web page', $errors) !!}
+    </div>
+
+
 </div>

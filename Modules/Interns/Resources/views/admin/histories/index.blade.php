@@ -63,20 +63,16 @@
                                         {{ $history->firsttime }}
                                     </a>
                                 </td>
-                                <td>
-                                    <a href="{{ $history->firstimage }}">
-                                        <img src="{{ $history->firstimage }}" style="width: 100px; height: 100px; object-fit: none; object-position: center; border-radius: 50%">
-                                    </a>
+                                <td class="popup-img">
+                                    <img src="{{ $history->firstimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-position: center; border-radius: 50%">
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.interns.history.edit', [$history->id]) }}">
                                         {{ $history->lasttime }}
                                     </a>
                                 </td>
-                                <td>
-                                    <a href="{{ $history->lastimage }}">
-                                        <img src="{{ $history->lastimage }}" style="width: 100px; height: 100px; object-fit: none; object-position: center; border-radius: 50%">
-                                    </a>
+                                <td class="popup-img">
+                                    <img src="{{ $history->lastimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-position: center; border-radius: 50%">
                                 </td>
                                 <td>
                                     <div class="btn-group">
@@ -107,6 +103,13 @@
                 </div>
                 <!-- /.box -->
             </div>
+        </div>
+    </div>
+    <div class="show-img">
+        <div class="overlay"></div>
+        <div class="img-show">
+            <span>X</span>
+            <img src="">
         </div>
     </div>
     @include('core::partials.delete-modal')
@@ -155,4 +158,16 @@
     <?php if (isset($warnings)): ?>
     <?php echo $warnings; ?>
     <?php endif; ?>
+
+    <script>
+        $(".popup-img img").click(function () {
+            var $src = $(this).attr("src");
+            $(".show-img").fadeIn();
+            $(".img-show img").attr("src", $src);
+        });
+    
+        $("span, .overlay").click(function () {
+            $(".show-img").fadeOut();
+        });
+    </script>
 @endpush

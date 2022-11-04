@@ -42,7 +42,13 @@
                         <div id="st-notCompleted" class="col-md-2 diary-statistic bg-danger">
                             <p>Not Completed</p>
                             <p></p>
-                        </div>
+                        </div>    
+                    </div>
+                    <div class="row" style="margin:0 10px">
+                        <label for="" class="col-md-12">Filter</label>
+                        <div id="filter-1" class="col-md-4"></div>
+                        <div id="filter-2" class="col-md-4"></div>
+                        <div id="filter-7" class="col-md-4"></div>
                     </div>
                 </div>
                 <!-- /.box-header -->
@@ -172,11 +178,12 @@
                 initComplete: function () {
                     this.api()
                         .columns()
-                        .every(function () {
+                        .every(function (d) {
                             var column = this;
-                            if (!column.data()[0].startsWith("<div")) {
-                                var select = $('<select><option value="">All</option></select>')
-                                    .appendTo($(column.footer()).empty())
+                            var theadname = $("#DataTables_Table_0_wrapper th").eq([d]).text();
+                            if (column[0] == 1 || column[0] == 2 || column[0] == 7) {
+                                var select = $('<select class="form-control"><option value="">'+ theadname +'</option></select>')
+                                    .appendTo($('#filter-'+column[0]))
                                     .on('change', function () {
                                         var val = $.fn.dataTable.util.escapeRegex($(this).val());
                                         column.search(val ? '^' + val + '$' : '', true, false).draw();
@@ -190,7 +197,9 @@
                                     .unique()
                                     .sort()
                                     .each(function (d, j) {
-                                        select.append('<option value="' + d + '">' + d + '</option>');
+                                        if (d.length > 0) {
+                                            select.append('<option value="' + d + '">' + d + '</option>');
+                                        }
                                     });
                             }
                         });
