@@ -12,7 +12,6 @@ use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 use Modules\User\Permissions\PermissionManager;
 use Modules\User\Repositories\UserRepository;
 
@@ -43,9 +42,10 @@ class StudentController extends AdminBaseController
                     ->select('interns__schedules.id AS schedule', 'interns__students.id', 
                             'interns__students.fullname', DB::raw('date_format(dateofbirth, "%d-%m-%Y") AS dateofbirth'), 
                             'email', 'phone', 'studentid', 'position', 'interns__schools.shortname AS school', 
-                            'interns__faculties.facultyname AS faculty', 'year', 'lecturername', 'lectureremail', 'lecturerphone')
+                            'interns__faculties.facultyname AS faculty', 'year', 'avatar', 'cv', 'lecturername', 'lectureremail', 'lecturerphone',
+                            'internyear', 'internquarter')
                     ->join('interns__schools', 'interns__schools.id', 'interns__students.school')
-                    ->join('interns__faculties', 'interns__faculties.id', 'interns__students.faculty')
+                    ->leftJoin('interns__faculties', 'interns__faculties.id', 'interns__students.faculty')
                     ->leftJoin('interns__schedules', 'interns__schedules.student', 'interns__students.id')
                     ->get();
         
@@ -134,6 +134,7 @@ class StudentController extends AdminBaseController
         } else {
             $input = $request->all();
             $input['avatar'] = null;
+            $input['cv'] = null;
             
             $student = $this->student->create($input);
             
@@ -143,18 +144,27 @@ class StudentController extends AdminBaseController
                     ->get()[0]->id;
 
             if ($request->file('avatar') !== null) {
-                $destination_path = 'public/avatars/';
-                $avatar_name = $id .'_avatar.'. $request->file('avatar')->getClientOriginalExtension();
+                $destination_path = 'public/assets/student/'.$id.'/';
+                $avatar_name = 'avatar.'. $request->file('avatar')->getClientOriginalExtension();
                 if (Storage::exists($destination_path . $avatar_name)) {
                     Storage::delete($destination_path . $avatar_name);
                 }
                 $path = $request->file('avatar')->storeAs($destination_path, $avatar_name);
                 DB::table('interns__students')
-                    ->where('id' , $id)
+                    ->where('id', $id)
                     ->update(['avatar' => $avatar_name]);
-
-
-            }  
+            }
+            if ($request->file('cv') !== null) {
+                $destination_path = 'public/assets/student/'.$id.'/';
+                $cv_name = $request->file('cv')->getClientOriginalName();
+                if (Storage::exists($destination_path . $cv_name)) {
+                    Storage::delete($destination_path . $cv_name);
+                }
+                $path = $request->file('cv')->storeAs($destination_path, $cv_name);
+                DB::table('interns__students')
+                    ->where('id', $id)
+                    ->update(['cv' => $cv_name]);
+            }
 
             DB::table('interns__schedules')
                 ->insert([
@@ -277,16 +287,28 @@ class StudentController extends AdminBaseController
             return view('interns::admin.students.edit', compact('student', 'listschools', 'faculties', 'warnings'));
         } else {
             $input = $request->all();
-            $destination_path = 'public/avatars/';
+            $destination_path = 'public/assets/student/'.$student->id.'/';
 
             if ($request->file('avatar') !== null) {
-                $avatar_name = $student->id .'_avatar.'. $request->file('avatar')->getClientOriginalExtension();
+                $avatar_name = 'avatar.'. $request->file('avatar')->getClientOriginalExtension();
                 if (Storage::exists($destination_path . $avatar_name)) {
                     Storage::delete($destination_path . $avatar_name);
                 }
                 $path = $request->file('avatar')->storeAs($destination_path, $avatar_name);
                 $input['avatar'] = $avatar_name;
             }
+
+            if ($request->file('cv') !== null) {
+                $cv_name = $request->file('cv')->getClientOriginalName();
+                if (Storage::exists($destination_path . $cv_name)) {
+                    Storage::delete($destination_path . $cv_name);
+                }
+                $path = $request->file('cv')->storeAs($destination_path, $cv_name);
+                $input['cv'] = $cv_name;
+            } else {
+                unset($input['cv']);
+            }
+
             if (isset($request->clearavatar)) {
                 if (Storage::exists($destination_path . $student->avatar)) {
                     Storage::delete($destination_path . $student->avatar);
@@ -294,6 +316,13 @@ class StudentController extends AdminBaseController
                 $input['avatar'] = null;
             }
             
+            // $id = DB::table('users')
+            //     ->select('id')
+            //     ->where('email', $student->email)
+            //     ->get()[0]->id;
+            
+            // $this->user->update()
+
             $this->student->update($student, $input);
 
             return redirect()->route('admin.interns.student.index')
@@ -313,9 +342,18 @@ class StudentController extends AdminBaseController
             ->where('student', $student->id)
             ->delete();
 
-        $destination_path = 'public/avatars/';
-        if (Storage::exists($destination_path . $student->avatar)) {
-            Storage::delete($destination_path . $student->avatar);
+        $destination_path = 'public/assets/student/'.$student->id.'/';
+        if (Storage::exists($destination_path)) {
+            Storage::deleteDirectory($destination_path);
+        }
+
+        $id = DB::table('users')
+                ->select('id')
+                ->where('email', $student->email)
+                ->get();
+                
+        if (count($id) > 0) {
+            $this->user->delete($id[0]->id);
         }
         
         $this->student->destroy($student);

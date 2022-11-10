@@ -13,15 +13,32 @@
 @section('content')
     <div class="row">
         <div class="col-xs-12">
-            <div class="row">
+            <!-- <div class="row">
                 <div class="btn-group pull-right" style="margin: 0 15px 15px 0;">
                     <a href="{{ route('admin.interns.schedule.create') }}" class="btn btn-primary btn-flat" style="padding: 4px 10px;">
                         <i class="fa fa-pencil"></i> {{ trans('interns::schedules.button.create schedule') }}
                     </a>
                 </div>
-            </div>
+            </div> -->
             <div class="box box-primary">
                 <div class="box-header">
+                    {!! Form::open(['route' => ['admin.interns.fullcalendar.store'], 'method' => 'post']) !!}
+                        <div class="col-md-6">
+                            {!! Form::normalInput('title', 'Schedule Note', $errors, null, ['required']) !!}
+                        </div>
+                        <div class="col-md-2">
+                            {!! Form::normalInputOfType('datetime-local', 'start', 'Start', $errors, null, ['required']) !!}
+                        </div>
+                        <div class="col-md-2">
+                            {!! Form::normalInputOfType('datetime-local', 'end', 'End', $errors, null, ['required']) !!}
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="" style="visibility: hidden">Create</label>
+                                <button type="submit" class="btn btn-primary btn-flat form-control"><i class="fa fa-pencil"></i> Create A Schedule Note</button>
+                            </div>
+                        </div>
+                    {!! Form::close() !!}
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
@@ -265,34 +282,34 @@
                 },
                 selectable: true,
                 selectHelper: true,
-                select: function (event_start, event_end, allDay) {
-                    var event_name = prompt('Schedule Notes:');
-                    if (event_name) {
-                        var event_start = $.fullCalendar.formatDate(event_start, "Y-MM-DD HH:mm:ss");
-                        var event_end = $.fullCalendar.formatDate(event_end, "Y-MM-DD HH:mm:ss");
-                        $.ajax({
-                            url: SITEURL + "/fullcalendar-ajax",
-                            data: {
-                                event_name: event_name,
-                                event_start: event_start,
-                                event_end: event_end,
-                                type: 'create'
-                            },
-                            type: "POST",
-                            success: function (data) {
-                                displayMessage("Create Schedule Successful!!!");
-                                calendar.fullCalendar('renderEvent', {
-                                    id: data.id,
-                                    title: event_name,
-                                    start: event_start,
-                                    end: event_end,
-                                    allDay: allDay
-                                }, true);
-                                calendar.fullCalendar('unselect');
-                            }
-                        });
-                    }
-                },
+                // select: function (event_start, event_end, allDay) {
+                //     var event_name = prompt('Schedule Notes:');
+                //     if (event_name) {
+                //         var event_start = $.fullCalendar.formatDate(event_start, "Y-MM-DD HH:mm:ss");
+                //         var event_end = $.fullCalendar.formatDate(event_end, "Y-MM-DD HH:mm:ss");
+                //         $.ajax({
+                //             url: SITEURL + "/fullcalendar-ajax",
+                //             data: {
+                //                 event_name: event_name,
+                //                 event_start: event_start,
+                //                 event_end: event_end,
+                //                 type: 'create'
+                //             },
+                //             type: "POST",
+                //             success: function (data) {
+                //                 displayMessage("Create Schedule Successful!!!");
+                //                 calendar.fullCalendar('renderEvent', {
+                //                     id: data.id,
+                //                     title: event_name,
+                //                     start: event_start,
+                //                     end: event_end,
+                //                     allDay: allDay
+                //                 }, true);
+                //                 calendar.fullCalendar('unselect');
+                //             }
+                //         });
+                //     }
+                // },
                 // eventDrop: function (event, delta) {
                 //     var event_start = $.fullCalendar.formatDate(event.start, "Y-MM-DD");
                 //     var event_end = $.fullCalendar.formatDate(event.end, "Y-MM-DD");
@@ -331,7 +348,7 @@
             });
         });
         function displayMessage(message) {
-            toastr.success(message, 'Event');            
+            toastr.success(message, 'Event');
         }
     </script>
 

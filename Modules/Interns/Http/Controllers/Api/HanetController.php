@@ -58,4 +58,28 @@ class HanetController extends AdminBaseController
         return response()->json($response);
     }
 
+    public function updateToken(Request $request) {
+        $path = base_path('.env');
+        
+        if (file_exists($path)) {
+            file_put_contents($path, str_replace(
+                'HANET_TOKEN='.env('HANET_TOKEN'), 'HANET_TOKEN='.$request->hanetToken, file_get_contents($path)
+            ));
+            file_put_contents($path, str_replace(
+                'HANET_PLACEID='.env('HANET_PLACEID'), 'HANET_PLACEID='.$request->hanetPlaceID, file_get_contents($path)
+            ));
+            file_put_contents($path, str_replace(
+                'HANET_DEVICES='.env('HANET_DEVICES'), 'HANET_DEVICES='.$request->hanetDevices, file_get_contents($path)
+            ));
+        }
+        
+        // Hanet API
+        $data = [
+            'hanetToken' => env('HANET_TOKEN'),
+            'hanetPlaceID' => env('HANET_PLACEID'),
+            'hanetDevices' => env('HANET_DEVICES'),
+        ];
+        return redirect()->route('dashboard.module.settings', ['core'])->with('data', $data);
+    }
+
 }

@@ -36,7 +36,13 @@ class SettingController extends AdminBaseController
 
     public function index()
     {
-        return redirect()->route('dashboard.module.settings', ['core']);
+        // Hanet API
+        $data = [
+            'hanetToken' => env('HANET_TOKEN'),
+            'hanetPlaceID' => env('HANET_PLACEID'),
+            'hanetDevices' => env('HANET_DEVICES'),
+        ];
+        return redirect()->route('dashboard.module.settings', ['core'])->with('data', $data);
     }
 
     public function store(SettingRequest $request)

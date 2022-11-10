@@ -5,6 +5,10 @@ use Illuminate\Routing\Router;
 
 $router->group(['prefix' =>'/'], function (Router $router) {
     $router->post('hanet', 'HanetController@hanet');
+    $router->post('hanet/token', [
+        'as' => 'hanet.token',
+        'uses' => 'HanetController@updateToken',
+    ]);
 
 
 

@@ -64,7 +64,7 @@
                                     </a>
                                 </td>
                                 <td class="popup-img">
-                                    <img src="{{ $history->firstimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-position: center; border-radius: 50%">
+                                    <img src="{{ $history->firstimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-fit: cover; object-position: center; border-radius: 50%">
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.interns.history.edit', [$history->id]) }}">
@@ -72,7 +72,7 @@
                                     </a>
                                 </td>
                                 <td class="popup-img">
-                                    <img src="{{ $history->lastimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-position: center; border-radius: 50%">
+                                    <img src="{{ $history->lastimage }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-fit: cover; object-position: center; border-radius: 50%">
                                 </td>
                                 <td>
                                     <div class="btn-group">

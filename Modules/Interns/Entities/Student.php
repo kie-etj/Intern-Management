@@ -20,8 +20,11 @@ class Student extends Model
         'faculty',
         'year',
         'avatar',
+        'cv',
         'lecturername',
         'lectureremail',
         'lecturerphone',
+        'internyear',
+        'internquarter',
     ];
 }

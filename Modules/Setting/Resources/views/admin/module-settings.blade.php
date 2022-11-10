@@ -26,15 +26,22 @@
                 }
             </style>
     		<ul class="nav nav-list">
-    		  <?php foreach ($modulesWithSettings as $module => $settings): ?>
-                  <li>
-                    <a href="{{ route('dashboard.module.settings', [$module]) }}"
-                       class="{{ $module === $currentModule->getName() ? 'active' : '' }}">
-                        {{ ucfirst($module) }}
+    		    <?php foreach ($modulesWithSettings as $module => $settings): ?>
+                    <li>
+                        <a href="{{ route('dashboard.module.settings', [$module]) }}"
+                            class="{{ $module === $currentModule->getName() ? 'active' : '' }}">
+                            {{ ucfirst($module) }}
                         <small class="badge pull-right bg-blue">{{ count($settings) }}</small>
                     </a>
                     </li>
               <?php endforeach; ?>
+                <!-- Hanet token -->
+                <li>
+                    <a style="cursor: pointer" data-toggle="modal" data-target="#modal-hanet">
+                        Hanet API
+                        <small class="badge pull-right bg-blue">3</small>
+                    </a>
+                </li>
     		</ul>
     	</div>
     </div>
@@ -77,6 +84,34 @@
     </div>
 </div>
 {!! Form::close() !!}
+<!-- Hanet Model -->
+<div class="modal fade" id="modal-hanet" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="font-weight: bold;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title" id="modalLabel">Hanet API Update</h3>
+            </div>
+            {!! Form::open(['route' => ['hanet.token'], 'method' => 'post']) !!}
+            <div class="modal-body">
+                <div class="box-body">
+                        {!! Form::normalInput('hanetToken', 'Token', $errors) !!}
+
+                        {!! Form::normalInput('hanetPlaceID', 'Place ID', $errors) !!}
+
+                        {!! Form::normalInput('hanetDevices', 'Device', $errors) !!}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success pull-left" data-dismiss="modal">Update</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            {{ Form::close() }}
+        </div>
+    </div>
+</div>
 @stop
 
 @push('js-stack')
@@ -97,5 +132,13 @@ $( document ).ready(function() {
       $(this).parent().append(input);
     });
 });
+</script>
+<script>
+    <?php $data = Session::get('data'); ?>
+    const data = <?= json_encode($data) ?>;
+    for (const key in data) {
+        console.log(key);
+        document.getElementById(key).value = data[key];
+    }
 </script>
 @endpush

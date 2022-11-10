@@ -10,7 +10,7 @@
 
         {!! Form::normalInput('position', 'Position', $errors, $student) !!}
 
-        {!! Form::normalInputOfType('number', 'year', 'Student Year', $errors, $student, ['min' => 1, 'max' => 6]) !!}
+        {!! Form::normalInput('studentid', 'Student ID', $errors, $student) !!}
     </div>
     <div class="col-md-4">
         {!! Form::normalSelect('school', 'School', $errors, $listschools, $student) !!}
@@ -21,13 +21,20 @@
     
         {!! Form::normalInput('lecturerphone', 'Lecturer Phone', $errors, $student) !!}
 
-        {!! Form::normalInput('studentid', 'Student ID', $errors, $student) !!}
+        {!! Form::normalInputOfType('number', 'year', 'Student Year', $errors, $student, ['min' => 1, 'max' => 6]) !!}
     </div>
     <div class="col-md-4">
+        {!! Form::normalInput('internyear', 'Intern Year', $errors, $student) !!}
+
+        {!! Form::normalSelect('internquarter', 'Intern Quarter', $errors, [1 => 1, 2 => 2, 3 => 3, 4 => 4], $student) !!}
+
+        {!! Form::normalFile('cv', 'CV', $errors, null, ['accept' => 'application/pdf']) !!}
+
         {!! Form::normalFile('avatar', 'Avatar', $errors, ['accept' => 'image/*']) !!}
         
         <input type='checkbox' name='clearavatar' id='clearavatar'> Clear Avatar
-        <img src="{{ isset($student->avatar) ? asset('/avatars/'.$student->avatar) : '' }}" id="show" width="100%" height="100%" />
+        <br>
+        <img src="{{ isset($student->avatar) ? asset('/assets/student/'.$student->id.'/'.$student->avatar) : '' }}" id="show" width="400px" height="400px" style="border-radius: 50%; object-fit: cover;" />
     </div>
 
 </div>

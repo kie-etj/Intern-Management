@@ -39,7 +39,17 @@ class FacultyController extends AdminBaseController
                         ->join('interns__schools', 'interns__schools.id', '=', 'interns__faculties.school')
                         ->get();
 
-        return view('interns::admin.faculties.index', compact('faculties'));
+        $schools = DB::table('interns__schools')
+                    ->select('id', 'fullname')
+                    ->orderBy('fullname')
+                    ->get();
+            
+        $results = [];
+        foreach ($schools as $key => $value) {
+            $results[$value->id] = $value->fullname;
+        }
+
+        return view('interns::admin.faculties.index', compact('faculties', 'results'));
     }
 
     /**

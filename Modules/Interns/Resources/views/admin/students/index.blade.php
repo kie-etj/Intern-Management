@@ -24,14 +24,15 @@
                 <div class="box-header">
                     <div>
                         <label for="" class="col-md-12">Filter</label>
-                        <div id="filter-5" class="col-md-3"></div>
-                        <div id="filter-6" class="col-md-3"></div>
-                        <div id="filter-8" class="col-md-3"></div>
+                        <div id="filter-5" class="col-md-2"></div>
+                        <div id="filter-6" class="col-md-2"></div>
+                        <div id="filter-8" class="col-md-2"></div>
+                        <div id="filter-9" class="col-md-2"></div>
+                        <div id="filter-10" class="col-md-2"></div>
                     </div>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    @include('interns::admin.students.partials.filter-fields')
                     <div class="table-responsive">
                         <table class="data-table table table-bordered table-hover">
                             <thead>
@@ -45,8 +46,8 @@
                                 <th>School</th>
                                 <th>Faculty</th>
                                 <th>Lecturer Name</th>
-                                <th>Lecturer Email</th>
-                                <th>Phone</th>
+                                <th>Intern</th>
+                                <th>Quarter</th>
                                 <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
                             </tr>
                             </thead>
@@ -82,13 +83,15 @@
                                     {{ $student->lecturername }}
                                 </td>
                                 <td>
-                                    {{ $student->lectureremail }}
+                                    {{ $student->internyear }}
                                 </td>
                                 <td>
-                                    {{ $student->lecturerphone }}
+                                    {{ $student->internquarter }}
                                 </td>
+
                                 <td>
                                     <div class="btn-group">
+                                        <a class="btn btn-default btn-flat" data-toggle="modal" data-target="#modal-{{ $student->id }}"><i class="fa fa-eye"></i></a>
                                         <?php if ($student->schedule): ?>
                                             <a href="{{ route('admin.interns.schedule.edit', [$student->schedule]) }}" class="btn btn-default btn-flat"><i class="fa fa-calendar"></i></a>
                                         <?php else: ?>
@@ -114,8 +117,6 @@
                                 <th>School</th>
                                 <th>Faculty</th>
                                 <th>Lecturer Name</th>
-                                <th>Lecturer Email</th>
-                                <th>Phone</th>
                                 <th>{{ trans('core::core.table.actions') }}</th>
                             </tr>
                             </tfoot>
@@ -127,6 +128,81 @@
             </div>
         </div>
     </div>
+    <?php if (isset($students)): ?>
+    <?php foreach ($students as $student): ?>
+    <div class="modal fade" id="modal-{{ $student->id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="font-weight: bold;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h3 class="modal-title" id="modalLabel">Student Information</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-2">Full Name:</div>
+                        <div class="col-md-4">{{ $student->fullname }}</div>
+    
+                        <div class="col-md-2">Birthday:</div>
+                        <div class="col-md-4">{{ $student->dateofbirth }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Email:</div>
+                        <div class="col-md-4">{{ $student->email }}</div>
+                        
+                        <div class="col-md-2">Phone:</div>
+                        <div class="col-md-4">{{ $student->phone }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Student ID:</div>
+                        <div class="col-md-4">{{ $student->studentid }}</div>
+                        
+                        <div class="col-md-2">Position:</div>
+                        <div class="col-md-4">{{ $student->position ?? ' '}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">School:</div>
+                        <div class="col-md-4">{{ $student->school }}</div>
+                        
+                        <div class="col-md-2">Faculty:</div>
+                        <div class="col-md-4">{{ $student->faculty }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Year:</div>
+                        <div class="col-md-4">{{ $student->year }}</div>
+                        
+                        <div class="col-md-2">Lecturer Name:</div>
+                        <div class="col-md-4">{{ $student->lecturername }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Lecturer Email:</div>
+                        <div class="col-md-4">{{ $student->lectureremail }}</div>
+    
+                        <div class="col-md-2">Lecturer Phone:</div>
+                        <div class="col-md-4">{{ $student->lecturerphone }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Avatar:</div>
+                        <div class="col-md-4">
+                            <img src="{{ asset('/assets/student/'.$student->id.'/'.$student->avatar.'') }}" onerror="this.src='{{ asset('/assets/img/No-Image.png') }}'" style="width: 100px; height: 100px; object-fit: cover; object-position: center; border-radius: 50%">
+                            
+                        </div>
+    
+                        <div class="col-md-2">CV:</div>
+                        <div class="col-md-4">
+                            <a href="{{ asset('/assets/student/'.$student->id.'/'.$student->cv.'') }}" target="_blank">{{ $student->cv }}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+    <?php endif; ?>
     @include('core::partials.delete-modal')
 @stop
 
@@ -160,7 +236,7 @@
                 "sort": true,
                 "info": true,
                 "autoWidth": true,
-                "order": [[ 0, "desc" ]],
+                "order": [[ 9, "desc" ], [ 10, "desc" ]],
                 "language": {
                     "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
                 },
@@ -170,7 +246,7 @@
                         .every(function (d) {
                             var column = this;
                             var theadname = $("#DataTables_Table_0_wrapper th").eq([d]).text();
-                            if (column[0] == 5 || column[0] == 6 || column[0] == 8) {
+                            if (column[0] == 5 || column[0] == 6 || column[0] == 8 || column[0] == 9 || column[0] == 10) {
                                 var select = $('<select class="form-control"><option value="">'+ theadname +'</option></select>')
                                     .appendTo($('#filter-'+column[0]))
                                     .on('change', function () {

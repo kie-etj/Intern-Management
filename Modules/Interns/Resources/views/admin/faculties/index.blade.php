@@ -21,7 +21,21 @@
                 </div>
             </div>
             <div class="box box-primary">
-                <div class="box-header">
+                <div class="box-header row">
+                    {!! Form::open(['route' => ['admin.interns.faculty.store'], 'method' => 'post']) !!}
+                    <div class="col-md-5">
+                        {!! Form::normalSelect('school', 'School', $errors, $results) !!}
+                    </div>
+                    <div class="col-md-5">
+                        {!! Form::normalInput('facultyname', 'Faculty Name', $errors) !!}
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="" style="visibility: hidden">Create</label>
+                            <button type="submit" class="btn btn-primary btn-flat form-control">Create A Faculty</button>
+                        </div>
+                    </div>
+                    {!! Form::close() !!}
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">

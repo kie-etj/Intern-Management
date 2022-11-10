@@ -4,11 +4,14 @@ namespace Modules\Interns\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Interns\Entities\Register;
 use Modules\Interns\Http\Requests\CreateRegisterRequest;
 use Modules\Interns\Http\Requests\UpdateRegisterRequest;
 use Modules\Interns\Repositories\RegisterRepository;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
+use Modules\User\Repositories\UserRepository;
 
 class RegisterController extends AdminBaseController
 {
@@ -16,12 +19,14 @@ class RegisterController extends AdminBaseController
      * @var RegisterRepository
      */
     private $register;
+    private $user;
 
-    public function __construct(RegisterRepository $register)
+    public function __construct(RegisterRepository $register, UserRepository $user)
     {
         parent::__construct();
 
         $this->register = $register;
+        $this->user = $user;
     }
 
     /**
@@ -31,9 +36,15 @@ class RegisterController extends AdminBaseController
      */
     public function index()
     {
-        //$registers = $this->register->all();
-
-        return view('interns::admin.registers.index', compact(''));
+        // $registers = $this->register->all();
+        $registers = DB::table('interns__registers')
+                        ->select('interns__registers.id', 'firstname', 'lastname', 'dateofbirth', 'email', 'phone',
+                        'studentid', 'position', 'interns__schools.shortname AS school', 'interns__faculties.facultyname AS faculty',
+                        'year', 'avatar', 'cv', 'lecturername', 'lectureremail', 'lecturerphone', 'interns__registers.created_at')
+                        ->leftJoin('interns__schools', 'interns__schools.id', 'interns__registers.school')
+                        ->leftJoin('interns__faculties', 'interns__faculties.id', 'interns__registers.faculty')
+                        ->get();
+        return view('interns::admin.registers.index', compact('registers'));
     }
 
     /**
@@ -54,11 +65,51 @@ class RegisterController extends AdminBaseController
      */
     public function store(CreateRegisterRequest $request)
     {
-        dd($request->all());
-        $this->register->create($request->all());
+        $id = $request->id;
+
+        $register = $this->register->find($id);
+
+        $data = [
+            'fullname' => $register->firstname . ' ' . $register->lastname,
+            'dateofbirth' => $register->dateofbirth,
+            'email' => $register->email,
+            'phone' => $register->phone,
+            'position' => $register->position,
+            'school' => $register->school,
+            'faculty' => $register->faculty,
+            'year' => $register->year,
+            'avatar' => $register->avatar,
+            'cv' => $register->cv,
+            'studentid' => $register->studentid,
+            'lecturername' => $register->lecturername,
+            'lectureremail' => $register->lectureremail,
+            'lecturerphone' => $register->lecturerphone,
+        ];
+        
+        $student = DB::table('interns__students')->insertGetId($data);
+
+        if ($student) {
+            $source_path = 'public/assets/register/'.$register->id.'/';
+            $destination_path = 'public/assets/student/'.$student.'/';
+            if (Storage::exists($source_path)) {
+                Storage::move($source_path, $destination_path);
+            }
+
+            $dataUser = [
+                'email' => $register->email,
+                'password' => 123,
+                'first_name' => $register->firstname,
+                'last_name' => $register->lastname,
+            ];
+
+            $this->user->createWithRoles($dataUser, [3], true);
+
+            DB::table('interns__registers')->where('id', $id)->delete();
+
+        }
 
         return redirect()->route('admin.interns.register.index')
-            ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::registers.title.registers')]));
+            ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::students.title.students')]));
     }
 
     /**
@@ -95,8 +146,14 @@ class RegisterController extends AdminBaseController
      */
     public function destroy(Register $register)
     {
-        $this->register->destroy($register);
+        
+        $destination_path = 'public/assets/register/'.$register->id.'/';
+        if (Storage::exists($destination_path)) {
+            Storage::deleteDirectory($destination_path);
+        }
 
+        $this->register->destroy($register);
+        
         return redirect()->route('admin.interns.register.index')
             ->withSuccess(trans('core::core.messages.resource deleted', ['name' => trans('interns::registers.title.registers')]));
     }

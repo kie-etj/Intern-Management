@@ -10,7 +10,7 @@
 
         {!! Form::normalInputOfType('number', 'year', 'Student Year', $errors, null, ['min' => 1, 'max' => 6]) !!}
 
-        {!! Form::normalInput('position', 'Position', $errors) !!}
+        {!! Form::normalInput('studentid', 'Student ID', $errors) !!}
     </div>
     <div class="col-md-4">
         {!! Form::normalSelect('school', 'School', $errors, $listschools) !!}
@@ -21,11 +21,17 @@
 
         {!! Form::normalInput('lecturerphone', 'Lecturer Phone', $errors) !!}
 
-        {!! Form::normalInput('studentid', 'Student ID', $errors) !!}
+        {!! Form::normalInput('position', 'Position', $errors) !!}
     </div>
     <div class="col-md-4">
+        {!! Form::normalInput('internyear', 'Intern Year', $errors) !!}
+
+        {!! Form::normalSelect('internquarter', 'Intern Quarter', $errors, [1 => 1, 2 => 2, 3 => 3, 4 => 4]) !!}
+
+        {!! Form::normalFile('cv', 'CV', $errors, null, ['accept' => 'application/pdf']) !!}
+
         {!! Form::normalFile('avatar', 'Avatar', $errors, null, ['accept' => 'image/*']) !!}
 
-        <img id="show" width="100%" height="100%" />
-    </div>    
+        <img id="show" width="400px" height="400px" style="border-radius: 50%; object-fit: cover;" />
+    </div>
 </div>

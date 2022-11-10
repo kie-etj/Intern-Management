@@ -41,7 +41,7 @@
     </style>
 </head>
 <body>
-    {!! Form::open(['route' => ['admin.interns.register.store'], 'method' => 'post']) !!}
+    {!! Form::open(['route' => ['register-intern/create'], 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
     <div class="container">
         <h1 class="heading">REGISTER NEW INTERN</h1>
         <hr>
@@ -50,24 +50,24 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col">
-                            {!! Form::normalInput('firstname', 'First Name', $errors) !!}
+                            {!! Form::normalInput('firstname', 'First Name', $errors, null, ['required']) !!}
                         </div>
                         <div class="col">
-                            {!! Form::normalInput('lastname', 'Last Name', $errors) !!}
+                            {!! Form::normalInput('lastname', 'Last Name', $errors, null, ['required']) !!}
                         </div>
                         <div class="col">
-                            {!! Form::normalInputOfType('date', 'dateofbirth', 'Date of Birth', $errors) !!}
+                            {!! Form::normalInputOfType('date', 'dateofbirth', 'Date of Birth', $errors, null, ['required']) !!}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            {!! Form::normalInput('studentid', 'Student ID', $errors) !!}
+                            {!! Form::normalInput('studentid', 'Student ID', $errors, null, ['required']) !!}
                         </div>
                         <div class="col">
-                            {!! Form::normalInputOfType('email', 'email', 'Student Email', $errors) !!}
+                            {!! Form::normalInputOfType('email', 'email', 'Student Email', $errors, null, ['required']) !!}
                         </div>
                         <div class="col">
-                            {!! Form::normalInput('phone', 'Student Phone', $errors) !!}
+                            {!! Form::normalInput('phone', 'Student Phone', $errors, null, ['required']) !!}
                         </div>
                     </div>
                     <div class="row">
@@ -118,6 +118,11 @@
         </div>
     </div>
     {!! Form::close() !!}
+    <!-- Custom -->
+    <?php if (isset($warnings)): ?>
+    <?php echo $warnings; ?>
+    <?php endif; ?>
+
     <script>
         function addOption(element, selectElement) {
             const newOption = document.createElement('option');

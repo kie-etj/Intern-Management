@@ -197,7 +197,10 @@ class ScheduleController extends AdminBaseController
      */
     public function destroy(Schedule $schedule)
     {
-        $this->schedule->destroy($schedule);
+        // $this->schedule->destroy($schedule);
+        DB::table('interns__schedules')
+            ->where('id', $schedule->id)
+            ->update(['schedule' => null]);
 
         return redirect()->route('admin.interns.schedule.index')
             ->withSuccess(trans('core::core.messages.resource deleted', ['name' => trans('interns::schedules.title.schedules')]));
@@ -222,8 +225,8 @@ class ScheduleController extends AdminBaseController
                             'updated_at' => now(),
                         ]);
  
-              return response()->json($event);
-             break;
+                return response()->json($event);
+                break;
   
             case 'edit':
                 $event = DB::table('interns__fullcalendars')
@@ -247,6 +250,26 @@ class ScheduleController extends AdminBaseController
                 # ...
                 break;
         }
+    }
+    
+    public function storeFullcalendar(Request $request) {
+        $student = DB::table('interns__students')
+                    ->select('id')
+                    ->where('email', auth()->user()->email)
+                    ->get()[0]->id;
+
+        $event = DB::table('interns__fullcalendars')
+                ->insert([
+                    'student' => $student,
+                    'title' => $request->title,
+                    'start' => $request->start,
+                    'end' => $request->end,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+        
+        return redirect()->route('admin.interns.schedule.index')
+            ->withSuccess(trans('core::core.messages.resource created', ['name' => trans('interns::schedules.title.schedules')]));
     }
     
 }

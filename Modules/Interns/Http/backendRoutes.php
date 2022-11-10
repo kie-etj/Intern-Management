@@ -202,7 +202,12 @@ $router->group(['prefix' =>'/interns'], function (Router $router) {
         'uses' => 'HistoryController@destroy',
         'middleware' => 'can:interns.histories.destroy'
     ]);
+    // Fullcalendar Schedule
     $router->post('fullcalendar-ajax', 'ScheduleController@createEvents');
+    $router->post('fullcalendar/store', [
+        'as' => 'admin.interns.fullcalendar.store',
+        'uses' => 'ScheduleController@storeFullcalendar',
+    ]);
     
     $router->bind('register', function ($id) {
         return app('Modules\Interns\Repositories\RegisterRepository')->find($id);
