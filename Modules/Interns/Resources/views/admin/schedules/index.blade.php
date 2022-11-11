@@ -23,6 +23,9 @@
             <div class="box box-primary">
                 <div class="box-header">
                     {!! Form::open(['route' => ['admin.interns.fullcalendar.store'], 'method' => 'post']) !!}
+                        <div class="col-md-12">
+                            <h2>Create New Schedule Note</h2>
+                        </div>
                         <div class="col-md-6">
                             {!! Form::normalInput('title', 'Schedule Note', $errors, null, ['required']) !!}
                         </div>

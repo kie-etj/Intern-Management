@@ -12,4 +12,8 @@ $router->group(['prefix' => '/'], function (Router $router) {
     $router->get('register-intern/success',[
         'RegisterController@success'
     ]);
+    $router->get('register-intern/mail', [
+        'as' => 'register.mail',
+        'uses' => 'RegisterController@sendMail',
+    ]);
 });

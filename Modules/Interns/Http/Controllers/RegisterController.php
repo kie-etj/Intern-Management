@@ -5,10 +5,6 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Modules\Interns\Entities\History;
-use Modules\Interns\Http\Requests\CreateHistoryRequest;
-use Modules\Interns\Http\Requests\UpdateHistoryRequest;
-use Modules\Interns\Repositories\HistoryRepository;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 
 use Illuminate\Support\Facades\DB;
@@ -41,7 +37,12 @@ class RegisterController extends AdminBaseController
             $existPersonID = DB::table('interns__students')
                                 ->where('studentid', $request->studentid)
                                 ->exists();
-            if ($existPersonID) {
+
+            $existRegisterID = DB::table('interns__registers')
+                                ->where('studentid', $request->studentid)
+                                ->exists();
+
+            if ($existPersonID || $existRegisterID) {
                 $schools = DB::table('interns__schools')
                             ->select('id', 'fullname')
                             ->orderBy('fullname')
@@ -57,7 +58,7 @@ class RegisterController extends AdminBaseController
                             ->get();
 
                 $student['faculty'] = $request->faculty;
-                $warnings = '<script>alert("Đã có sinh viên dùng MSSV này hoặc bạn đã có trong hệ thống!!!");</script>';
+                $warnings = '<script>alert("Đã có sinh viên dùng MSSV này hoặc bạn đã đăng ký trước đây!!!");</script>';
                 return view('interns::public.create', compact('listschools', 'faculties', 'warnings', 'student'));
             }
         }
@@ -65,8 +66,12 @@ class RegisterController extends AdminBaseController
         $existEmail = DB::table('interns__students')
                     ->where('email', $request->email)
                     ->exists();
+        
+        $existRegisterEmail = DB::table('interns__registers')
+                                ->where('email', $request->email)
+                                ->exists();
 
-        if ($existEmail) {
+        if ($existEmail || $existRegisterEmail) {
             $schools = DB::table('interns__schools')
                     ->select('id', 'fullname')
                     ->orderBy('fullname')
@@ -82,7 +87,7 @@ class RegisterController extends AdminBaseController
                         ->get();
 
             $student['faculty'] = $request->faculty;
-            $warnings = '<script>alert("Đã có sinh viên sở hữu EMAIL này hoặc bạn đã có trong hệ thống!!!");</script>';
+            $warnings = '<script>alert("Đã có sinh viên sở hữu EMAIL này hoặc bạn đã đăng ký trước đây!!!");</script>';
             return view('interns::public.create', compact('listschools', 'faculties', 'warnings', 'student'));
         } else {
             $input = $request->all();
@@ -126,6 +131,10 @@ class RegisterController extends AdminBaseController
     public function success(Request $request)
     {            
         return view('interns::public.success');
+    }
+
+    public function sendMail(Request $request) {
+        return view('interns::public.mail');
     }
 
 }

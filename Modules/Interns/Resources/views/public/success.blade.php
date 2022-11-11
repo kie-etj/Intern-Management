@@ -51,6 +51,11 @@
         <br/>Vui lòng đợi quản trị viên xác nhận!!!</p>
         <br>
         <a href="/register-intern">Quay về trang đăng ký</a>
+        <br>
+        <br>
+        <p>Hoặc</p>
+        <br>
+        <a href="/">Về trang chủ</a>
     </div>
 </body>
 </html>
